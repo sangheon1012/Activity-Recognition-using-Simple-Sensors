@@ -1,0 +1,15 @@
+timestamp,state
+2019.04.18 00:36:37,sleep start
+2019.04.18 06:35:36,sleep end
+2019.04.18 06:39:25,sleep start
+2019.04.18 11:14:55,sleep end
+2019.04.18 11:16:40,bath start
+2019.04.18 11:28:37,bath end
+2019.04.18 11:32:56,leave start
+2019.04.18 11:33:13,leave end
+2019.04.18 11:51:24,enter start
+2019.04.18 11:51:39,enter end
+2019.04.18 11:54:08,toilet start
+2019.04.18 12:09:52,toilet end
+2019.04.18 12:10:18,relax start
+2019.04.18 13:14:06,relax end

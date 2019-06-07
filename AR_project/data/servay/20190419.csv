@@ -1,0 +1,25 @@
+timestamp,state
+2019.04.19 01:02:26,sleep start
+2019.04.19 09:30:32,sleep end
+2019.04.19 09:32:01,toilet start
+2019.04.19 09:33:12,toilet end
+2019.04.19 09:36:51,hygiene start
+2019.04.19 09:37:37,hygiene end
+2019.04.19 09:37:57,cook start
+2019.04.19 09:52:52,cook end
+2019.04.19 09:53:10,eat start
+2019.04.19 09:59:07,eat end
+2019.04.19 10:03:01,relax start
+2019.04.19 11:10:51,relax end
+2019.04.19 11:11:29,bath start
+2019.04.19 11:23:40,bath end
+2019.04.19 11:26:27,toilet start
+2019.04.19 11:27:58,toilet end
+2019.04.19 11:30:27,relax start
+2019.04.19 11:38:44,relax end
+2019.04.19 11:38:57,leave start
+2019.04.19 11:39:14,leave end
+2019.04.19 12:09:17,enter start
+2019.04.19 12:09:37,enter end
+2019.04.19 12:11:00,relax start
+2019.04.19 13:05:42,relax end
