@@ -1,3 +1,8 @@
+#시간 센서의 On/Off로 들어오는 로우 데이터를 
+#행:시간, 열: 각 센서의 On/Off 여부(0 or 1) 인 데이터셋으로 변환함
+#카운트 단위 슬라이딩 윈도우 방식으로 각 센서의 On 값을 카운팅함
+#10가의 On 센서가 들어올 때마다 각 센서의 On 값을 카운팅함
+
 #read csv file
 rdata = read.csv('sensor/20190416_sensor.csv', header=F)
 names(rdata) = c("timestamp","sensor")
@@ -6,10 +11,11 @@ names(rdata) = c("timestamp","sensor")
 rdata$timestamp = as.POSIXct(rdata$timestamp, format="%Y-%m-%d %H:%M:%S")
 rdata$sensor = as.character(rdata$sensor)
 
+#센서값이 On인 것만 따로 저장함
 Ondata = rdata[grepl('On',rdata[,2]),]
 ndata = data.frame()
 
-#transform from raw sensor data to count base sliding window dataset
+#슬라이딩 윈도우 내에 센서값이 10개 들어올 때 마다 각 센서의 On 갯수를 카운팅함
 ##v1: firing time, v2: last firing time, v3: time differ, v4~: sensor count
 for(i in 1:(nrow(Ondata)-9)){
   print(i/(nrow(Ondata)-9)*100)
@@ -53,7 +59,7 @@ for(i in 1:(nrow(Ondata)-9)){
   ndata[i,38] = sum(Ondata[i:(i+9),2]=='BathD On')
 }
 
-#add timestamp and first firing time
+#add timestamp, first firing time
 ndata = cbind(Ondata[1:(nrow(Ondata)-9),1],Ondata[10:nrow(Ondata),1],ndata)
 
 #set col name

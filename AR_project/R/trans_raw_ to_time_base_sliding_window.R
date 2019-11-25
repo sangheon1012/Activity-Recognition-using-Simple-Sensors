@@ -1,3 +1,7 @@
+#시간 센서의 On/Off로 들어오는 로우 데이터를 
+#행:시간, 열: 각 센서의 On/Off 여부(0 or 1) 인 데이터셋으로 변환함
+#10초 단위의 슬라이딩 윈도우 방식으로 각 센서의 On 값을 카운팅함
+
 #read raw sensor data
 rdata = read.csv('sensor/20190416_sensor.csv', header=F)
 #set col name
@@ -7,15 +11,22 @@ names(rdata) = c("timestamp","sensor")
 rdata$timestamp = as.POSIXct(rdata$timestamp, format="%Y-%m-%d %H:%M:%S")
 rdata$sensor = as.character(rdata$sensor)
 
-#find dataset's first time and last time
+#데이터가 시작하는 첫번째 시간과 마지막 시간을 찾음
 ftime = rdata$timestamp[1]
 etime = rdata$timestamp[dim(rdata)[1]]
+#슬라이딩 윈도우의 시작시간과 끝시간을 정함
 starttime = seq(from=ftime, to=etime-9, by=10)
 endtime = seq(from=ftime+9, to=etime, by=10)
-
 ndata = data.frame()
 
-#transform from raw dataset to time base sliding window dataset
+#슬라이딩 윈도우를 1초씩 이동함. 슬라이딩 윈도 시간 범위 내에서 로우 데이터의 센서값 On의 갯수를 카운트함
+
+#Ex) 00:00:00 Senor1 On, 00:00:02 Senor1 On, 00:00:10 Senor1 On, 00:00:11 Senor2 On,
+
+# -> | start   |  end     |  Sensor1 | Sensor2 |
+#    |00:00:01 | 00:00:10 |    3     |    0    |
+#    |00:00:02 | 00:00:11 |    2     |    1    |
+
 for (i in 1:length(endtime)){
   print(i/length(endtime)*100)
   ndata[i,1] = sum(rdata[,1]>=starttime[i]&rdata[,1]<=endtime[i]&rdata[,2]=='LR0 On')
@@ -57,6 +68,7 @@ for (i in 1:length(endtime)){
   ndata[i,37] = sum(rdata[,1]>=starttime[i]&rdata[,1]<=endtime[i]&rdata[,2]=='BathD On')
 }
 
+#생성된 데이터셋과 슬라이딩 윈도 끝시간을 결합함
 ndata = cbind(endtime,ndata)
 
 #set column name

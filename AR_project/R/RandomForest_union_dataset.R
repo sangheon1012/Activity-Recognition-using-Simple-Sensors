@@ -1,4 +1,7 @@
-#read all dataset and merge all
+#정리된 센서 데이터셋과 설문 데이터셋을 읽고 합쳐 학습에 쓰일 수 있는
+#데이터셋으로 변환하는 코드입니다
+
+#1. 모든 센서 데이터와 설문 데이터를 읽어옵니다
 ndata1 <- read.csv('n20190416.csv', header=T, na.strings = "NA")
 ndata2 <- read.csv('n20190417.csv', header=T, na.strings = "NA")
 ndata3 <- read.csv('n20190418.csv', header=T, na.strings = "NA")
@@ -16,25 +19,25 @@ scdata3 <- read.csv('sv20190418.csv', header=T, na.strings = "NA")
 scdata4 <- read.csv('sv20190419.csv', header=T, na.strings = "NA")
 scdata <- rbind(scdata1, scdata2, scdata3, scdata4)
 
-#set timestamp format
+#2. 각 데이터셋의 타임스템프 포멧을 설정합니다
 ndata$timestamp=as.POSIXct(ndata$timestamp, format="%Y-%m-%d %H:%M:%S")
 ssdata$timestamp=as.POSIXct(ssdata$timestamp, format="%Y-%m-%d %H:%M:%S")
 scdata$timestamp=as.POSIXct(scdata$timestamp, format="%Y-%m-%d %H:%M:%S")
 
-#remove Null in Activity dataset
+#Null을 제거합니다
 ndata <-ndata[!is.na(ndata[,2]),]
 
-#join with Sensor dataset and Activity dataset, 
+#3. 타임스템프 기준으로 센서 데이터와 설문 데이터를 조인합니다 
 #tss: time base sliding window
 #tsc: count base sliding window
 tssdata <- merge(ndata,ssdata,by="timestamp",all.x=T)
 tscdata <- merge(ndata,scdata,by="timestamp",all.x=T)
 
-#remove Null and timestamp in sensor dataset
+#4. Null을 제거하고 학습에 불필요한 타임스템프 컬럼을 제거합니다
 tscdata <- tscdata[!is.na(tscdata[,3]),]
 tscdata <- tscdata[,-3]
 
-#remove idle state
+#5. 센서값이 있으나 행동이 파악되지 않는 'Idle'가 있는 컬럼을 제거합니다.
 tssdata = subset(tssdata, state!='idle')
 write.csv(tssdata, file = "tssdata.csv", row.names=FALSE)
 tssdata <- read.csv('tssdata.csv', header=T, na.strings = "NA")
@@ -45,9 +48,8 @@ tscdata <- read.csv('tscdata.csv', header=T, na.strings = "NA")
 
 
 library(randomForest)
-
-#random forest modeling, trainset 80%, testset 20%
-##time base sliding window
+#6. random forest modeling, trainset 80%, testset 20%
+##6.1 time base sliding window
 train1 <- sample(nrow(tssdata), 0.8*nrow(tssdata), replace = FALSE)
 TrainSet1 <- tssdata[train1,-1]
 TestSet1 <- tssdata[-train1,-1]
@@ -57,7 +59,7 @@ predValid1 <- predict(model1, TestSet1, type = "class")
 mean(predValid1 == TestSet1$state)                    
 table(predValid1,TestSet1$state)
 
-##time base sliding window
+##6.2 time base sliding window
 train2 <- sample(nrow(tscdata), 0.8*nrow(tscdata), replace = FALSE)
 TrainSet2 <- tscdata[train2,-1]
 TestSet2 <- tscdata[-train2,-1]
